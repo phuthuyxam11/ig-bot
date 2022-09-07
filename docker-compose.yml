@@ -1,72 +1,79 @@
-version: '3'
-#
-#networks:
-#  web:
-#    external: true
-#    driver:  bridge
+version: "3.4"
+
 services:
-#  chrome_selenium:
-#    image: selenium/standalone-chrome:4.4.0-20220812
-#    hostname: chrome
-#    ports:
-#      - "5900:5900"
-#      - "4444:4444"
-#    privileged: true
-#    shm_size: 2g
-#  chrome_selenium:
-#    image: selenium/node-chrome:4.4.0-20220812
-#    shm_size: 2gb
-#    depends_on:
-#      - selenium-hub
-#    environment:
-#      - SE_EVENT_BUS_HOST=selenium-hub
-#      - SE_EVENT_BUS_PUBLISH_PORT=4442
-#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#    networks:
-#      web:
-#        aliases:
-#          - selenium
-
-#  edge:
-#    image: selenium/node-edge:4.4.0-20220812
-#    shm_size: 2gb
-#    depends_on:
-#      - selenium-hub
-#    environment:
-#      - SE_EVENT_BUS_HOST=selenium-hub
-#      - SE_EVENT_BUS_PUBLISH_PORT=4442
-#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#
-  firefox:
-    image: selenium/node-firefox:4.4.0-20220812
-    shm_size: 2gb
-    depends_on:
-      - selenium-hub
-    environment:
-      - SE_EVENT_BUS_HOST=selenium-hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_MAX_INSTANCES=10
-      - SE_NODE_MAX_SESSIONS=10
-
-  selenium-hub:
-    image: selenium/hub:4.4.0-20220812
-    container_name: selenium-hub
+  zookeeper:
+    image: zookeeper:3.7.0
     ports:
-      - "4442:4442"
-      - "4443:4443"
-      - "4444:4444"
+      - "2181:2181"
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka:2.12-2.5.0
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
-      GRID_MAX_SESSION: 10
-#    networks:
-#      - web
-#  api:
-#    build: .
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: "9092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 104858800
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:4.1.1
+    hostname: kafka-rest
+    ports:
+      - "38082:38082"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_REST_HOST_NAME: kafka-rest
+      KAFKA_REST_LISTENERS: http://kafka-rest:38082
+
+  kafka-web-gui:
+    image: tchiotludo/akhq:0.17.0
+    ports:
+      - "8081:8080"
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka:9092"
+  ig_bot_db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
 #    volumes:
-#      - ./src:/app/igbot
-#    ports:
-#      - '3000:3000'
-##    networks:
-##      - web
-#    depends_on:
-#        - firefox
+#      - data:/var/lib/postgresql/data
+
+  auth-service:
+    container_name: authentication-service
+    build: src/authentication
+    volumes:
+      - ./src/authentication:/app/igbot-auth
+    ports:
+      - "3000:80"
+    links:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  automate-service:
+    container_name: automate-service
+    build: src/automate
+    volumes:
+      - ./src/automate:/app/igbot-automate
+    ports:
+      - "3001:80"
+    links:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
