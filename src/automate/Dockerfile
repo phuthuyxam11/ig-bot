@@ -9,5 +9,5 @@ ENV GO111MODULE=off
 
 RUN go get github.com/githubnemo/CompileDaemon
 #RUN go get -t -d github.com/tebeka/selenium
-#ENTRYPOINT CompileDaemon -build="go build" -command="./igbot"
-ENTRYPOINT go run main.go
+ENTRYPOINT CompileDaemon -build="go build" -command="./igbot-automate"
+#ENTRYPOINT go run main.go
