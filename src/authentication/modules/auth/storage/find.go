@@ -1,20 +1,20 @@
 package userstorage
 
 import (
-	"200lab/struct/common"
-	usermod "200lab/struct/modules/auth/model"
 	"context"
+	"github.com/phuthuyxam11/go-common-service/common"
 	"gorm.io/gorm"
+	usermod "igbot.com/authentication/modules/auth/model"
 )
 
-func (s *sqlStore) FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermod.UsersModel, error) {
-	db := s.db.Table(usermod.UsersModel{}.TableName())
+func (s *sqlStore) FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermod.UserLoginData, error) {
+	db := s.db.Table(usermod.UserLoginData{}.TableName())
 
 	for i := range moreInfo {
 		db = db.Preload(moreInfo[i])
 	}
 
-	var user usermod.UsersModel
+	var user usermod.UserLoginData
 
 	if err := db.Where(conditions).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

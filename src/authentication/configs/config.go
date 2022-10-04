@@ -1,15 +1,19 @@
 package configs
 
-import "os"
+import (
+	"os"
+	"time"
+)
 
 type Config struct {
-	DBDrive    string
-	DBUSER     string
-	DBPASSWORD string
-	DBHOST     string
-	DBPORT     string
-	DBNAME     string
-	SERVERPOST string
+	DBDrive                string
+	DBUSER                 string
+	DBPASSWORD             string
+	DBHOST                 string
+	DBPORT                 string
+	DBNAME                 string
+	SERVERPOST             string
+	TIMELIMITREGISTERTOKEN time.Time
 }
 
 //DBDrive    string `mapstructure:"DB_DRIVER"`
@@ -22,12 +26,13 @@ type Config struct {
 
 func LoadConfig() (config Config) {
 	return Config{
-		DBDrive:    os.Getenv("DB_DRIVER"),
-		DBUSER:     os.Getenv("DB_USER"),
-		DBPASSWORD: os.Getenv("DB_PASSWORD"),
-		DBHOST:     os.Getenv("DB_HOST"),
-		DBPORT:     os.Getenv("DB_PORT"),
-		DBNAME:     os.Getenv("DB_NAME"),
-		SERVERPOST: os.Getenv("SERVER_POST"),
+		DBDrive:                os.Getenv("DB_DRIVER"),
+		DBUSER:                 os.Getenv("DB_USER"),
+		DBPASSWORD:             os.Getenv("DB_PASSWORD"),
+		DBHOST:                 os.Getenv("DB_HOST"),
+		DBPORT:                 os.Getenv("DB_PORT"),
+		DBNAME:                 os.Getenv("DB_NAME"),
+		SERVERPOST:             os.Getenv("SERVER_POST"),
+		TIMELIMITREGISTERTOKEN: time.Now().Add(time.Second * 60 * 60 * 24 * 3),
 	}
 }

@@ -1,8 +1,8 @@
 package component
 
 import (
-	// "200lab/struct/component/uploadprovider"
-	// "200lab/struct/pubsub"
+	// "igbot.com/authentication/component/uploadprovider"
+	// "igbot.com/authentication/pubsub"
 	"gorm.io/gorm"
 )
 

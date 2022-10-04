@@ -1,8 +1,8 @@
 package jwt
 
 import (
-	"200lab/struct/component/tokenprovider"
 	"github.com/dgrijalva/jwt-go"
+	"igbot.com/authentication/component/tokenprovider"
 	"time"
 )
 

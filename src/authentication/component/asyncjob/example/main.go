@@ -1,8 +1,8 @@
 package main
 
 import (
-	"200lab/struct/component/asyncjob"
 	"context"
+	"igbot.com/authentication/component/asyncjob"
 	"log"
 	"time"
 )

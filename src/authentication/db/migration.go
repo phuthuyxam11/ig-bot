@@ -7,8 +7,8 @@ import (
 
 func Migrate(dbOrm *gorm.DB) error {
 	// register model
-	users := usermodel.UsersModel{}
+	userLogin := usermodel.UserLoginData{}
 
-	err := dbOrm.AutoMigrate(&users)
+	err := dbOrm.AutoMigrate(&userLogin)
 	return err
 }

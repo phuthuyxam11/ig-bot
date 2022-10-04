@@ -1,9 +1,9 @@
 package userstorage
 
 import (
-	"200lab/struct/common"
-	usermod "200lab/struct/modules/auth/model"
 	"context"
+	"github.com/phuthuyxam11/go-common-service/common"
+	usermod "igbot.com/authentication/modules/auth/model"
 )
 
 func (s *sqlStore) CreateUser(ctx context.Context, data *usermod.UsersModelCreate) error {

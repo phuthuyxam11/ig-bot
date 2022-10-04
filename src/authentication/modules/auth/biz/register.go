@@ -1,15 +1,16 @@
 package userbiz
 
 import (
-	"200lab/struct/common"
-	userenum "200lab/struct/modules/auth/enum"
-	usermodel "200lab/struct/modules/auth/model"
-
 	"context"
+	"github.com/phuthuyxam11/go-common-service/common"
+	"igbot.com/authentication/configs"
+	usermodel "igbot.com/authentication/modules/auth/model"
+	"igbot.com/authentication/utils"
+	"time"
 )
 
 type RegisterStorage interface {
-	FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermodel.UsersModel, error)
+	FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermodel.UserLoginData, error)
 	CreateUser(ctx context.Context, data *usermodel.UsersModelCreate) error
 }
 
@@ -36,11 +37,18 @@ func (business *registerBusiness) Register(ctx context.Context, data *usermodel.
 		return usermodel.ErrEmailExisted
 	}
 
-	salt := common.GenSalt(50)
+	config := configs.LoadConfig()
+
+	salt := utils.GenSalt(50)
+	emailConfirmationToken := utils.GenSalt(200) + time.Now().String()
+	tokenGenerationTime := config.TIMELIMITREGISTERTOKEN
 
 	data.Password = business.hashed.Hash(data.Password + salt)
-	data.Salt = salt
-	data.Role = userenum.GUEST
+	data.PasswordSalt = salt
+	data.EmailConfirmationToken = emailConfirmationToken
+	data.TokenGenerationTime = tokenGenerationTime
+
+	//data.Role = userenum.GUEST
 
 	if err := business.registerStorage.CreateUser(ctx, data); err != nil {
 		return common.ErrCannotCreateEntity(usermodel.EntityName, err)

@@ -1,15 +1,15 @@
 package userbiz
 
 import (
-	"200lab/struct/common"
-	"200lab/struct/component"
-	"200lab/struct/component/tokenprovider"
-	usermod "200lab/struct/modules/auth/model"
 	"context"
+	"github.com/phuthuyxam11/go-common-service/common"
+	"igbot.com/authentication/component"
+	"igbot.com/authentication/component/tokenprovider"
+	usermod "igbot.com/authentication/modules/auth/model"
 )
 
 type LoginStorage interface {
-	FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermod.UsersModel, error)
+	FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*usermod.UserLoginData, error)
 }
 
 type loginBusiness struct {
@@ -42,10 +42,14 @@ func (business *loginBusiness) Login(ctx context.Context, data *usermod.UserLogi
 		return nil, usermod.ErrUserNameOrPassWordInvalid
 	}
 
-	passHashed := business.hasher.Hash(data.Password + user.Salt)
+	passHashed := business.hasher.Hash(data.Password + user.PasswordSalt)
 
 	if user.Password != passHashed {
 		return nil, usermod.ErrUserNameOrPassWordInvalid
+	}
+
+	if user.EmailVerifiedAt.IsZero() {
+		return nil, usermod.ErrAccIsNotVerify
 	}
 
 	payload := tokenprovider.TokenPayload{
