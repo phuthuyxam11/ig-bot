@@ -1,0 +1,31 @@
+//
+// Nav
+//
+
+.nav {
+	--#{$prefix}nav-link-color: var(--kt-nav-link-color);
+	--#{$prefix}nav-link-hover-color: var(--kt-nav-link-hover-color);
+	--#{$prefix}nav-link-disabled-color: var(--kt-nav-link-disabled-color);
+}
+
+//
+// Tabs
+//
+
+.nav-tabs {
+	--#{$prefix}nav-tabs-border-color: var(--kt-nav-tabs-border-color);
+	--#{$prefix}nav-tabs-link-hover-border-color: var(--kt-nav-tabs-link-hover-border-color);
+	--#{$prefix}nav-tabs-link-active-color: var(--kt-nav-tabs-link-active-color);
+	--#{$prefix}nav-tabs-link-active-bg: var(--kt-nav-tabs-link-active-bg);
+	--#{$prefix}nav-tabs-link-active-border-color: var(--kt-nav-tabs-link-active-border-color);
+}
+
+
+//
+// Pills
+//
+
+.nav-pills {
+	--#{$prefix}nav-pills-link-active-color: var(--kt-nav-pills-link-active-color);
+	--#{$prefix}nav-pills-link-active-bg: var(--kt-nav-pills-link-active-bg);
+}

@@ -1,0 +1,19 @@
+//
+// Alert
+//
+	
+@each $state, $value in $theme-colors {
+	$alert-background: var(--kt-#{$state}-inverse);
+	$alert-border: var(--kt-#{$state});
+	$alert-color: var(--kt-#{$state});
+
+	.alert-#{$state} {
+		color: $alert-color;
+		border-color: $alert-background;
+		background-color: $alert-border;
+
+		.alert-link {
+    		color: $alert-color;
+  		}
+	}
+}
