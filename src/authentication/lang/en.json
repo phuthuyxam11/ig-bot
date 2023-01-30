@@ -1,0 +1,17 @@
+{
+  "validate": {
+    "verifyAcc": {
+      "code": {
+        "require": "{{.ErrorField}} is required",
+        "exist": "{{.ErrorField}} is not exist",
+        "incorrect": "verify token incorrect",
+        "expired": "the account registration code has expired"
+      },
+      "id": {
+        "require": "{{.ErrorField}} is required",
+        "userexist": "user is not exist"
+      },
+      "activated": "user has been activated"
+    }
+  }
+}

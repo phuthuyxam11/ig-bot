@@ -10,10 +10,6 @@ func (s *sqlStore) UpdateUser(ctx context.Context, id int, data *usermod.UsersMo
 	db := s.db.Begin()
 
 	if err := db.Where("id = ?", id).Updates(data).Error; err != nil {
-		return common.ErrDB(err)
-	}
-
-	if err := db.Table(data.TableName()).Create(data).Error; err != nil {
 		db.Rollback()
 		return common.ErrDB(err)
 	}

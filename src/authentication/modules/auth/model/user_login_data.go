@@ -64,13 +64,14 @@ func (u *UsersModelCreate) Mask(isAdmin bool) {
 
 type UsersModelUpdate struct {
 	utils.SQLModel         `json:",inline"`
-	LoginName              string    `json:"name" gorm:"not null;column:login_name"`
+	LoginName              string    `json:"name" gorm:"not null;column:login_name;unique"`
 	Email                  string    `json:"email" gorm:"column:email;unique"`
 	Password               string    `json:"password" gorm:"column:password;not null"`
 	PasswordSalt           string    `json:"-" gorm:"column:password_salt"`
 	RememberToken          string    `json:"-" gorm:"column:remember_token;not null"`
 	EmailConfirmationToken string    `json:"-" gorm:"column:email_confirmation_token;not null"`
 	TokenGenerationTime    time.Time `json:"-" gorm:"column:token_generation_time;not null"`
+	EmailVerifiedAt        time.Time `json:"-" gorm:"column:email_verified_at"`
 }
 
 func (u *UsersModelUpdate) TableName() string {

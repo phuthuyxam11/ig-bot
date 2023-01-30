@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/phuthuyxam11/gin-validate-i18n-support/utils"
 	"igbot.com/authentication/component"
 	"igbot.com/authentication/configs"
 	"igbot.com/authentication/db"
@@ -30,10 +31,24 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	appCtx := component.NewAppContext(orm)
+	// register i18nSupport
+	i18nBundle, err := utils.I18nInit(config.LANGUAGEFOLDERPATH)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	appCtx := component.NewAppContext(orm, i18nBundle)
+
+	// register custom validation
+	err = auth.RegisterValidation(appCtx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// routes
 	r := gin.Default()
 	r.Use(middleware.Recover(appCtx))
+	r.Use(middleware.I18nSupportMiddleWare(appCtx))
 
 	// authentication routes
 	auth.UserRoutesRegister(r, appCtx)

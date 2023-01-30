@@ -1,0 +1,11 @@
+{
+  "validate": {
+    "verifyAcc": {
+      "code": {
+        "require": "Không được bỏ trống {{.ErrorField}}.",
+        "exist": "{{.ErrorField}} không tồn tại."
+      },
+      "activated": "Người dùng đã được kích hoạt vui lòng đi tới màn hình đăng nhập"
+    }
+  }
+}

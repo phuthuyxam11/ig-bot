@@ -14,15 +14,11 @@ type Config struct {
 	DBNAME                 string
 	SERVERPOST             string
 	TIMELIMITREGISTERTOKEN time.Time
+	EXPIREDTIMEVERIFYEMAIL int
+	LANGUAGEFOLDERPATH     string
 }
 
-//DBDrive    string `mapstructure:"DB_DRIVER"`
-//DBUSER     string `mapstructure:"DB_USER"`
-//DBPASSWORD string `mapstructure:"DB_PASSWORD"`
-//DBHOST     string `mapstructure:"DB_HOST"`
-//DBPORT     int    `mapstructure:"DB_PORT"`
-//DBNAME     string `mapstructure:"DB_NAME"`
-//SERVERPOST string `mapstructure:"SERVER_POST"`
+var rootDir, _ = os.Getwd()
 
 func LoadConfig() (config Config) {
 	return Config{
@@ -34,5 +30,7 @@ func LoadConfig() (config Config) {
 		DBNAME:                 os.Getenv("DB_NAME"),
 		SERVERPOST:             os.Getenv("SERVER_POST"),
 		TIMELIMITREGISTERTOKEN: time.Now().Add(time.Second * 60 * 60 * 24 * 3),
+		EXPIREDTIMEVERIFYEMAIL: 60 * 60 * 24 * 4,
+		LANGUAGEFOLDERPATH:     rootDir + "/lang",
 	}
 }

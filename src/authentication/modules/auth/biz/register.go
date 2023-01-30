@@ -6,6 +6,7 @@ import (
 	"igbot.com/authentication/configs"
 	usermodel "igbot.com/authentication/modules/auth/model"
 	"igbot.com/authentication/utils"
+	"strconv"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func (business *registerBusiness) Register(ctx context.Context, data *usermodel.
 	config := configs.LoadConfig()
 
 	salt := utils.GenSalt(50)
-	emailConfirmationToken := utils.GenSalt(200) + time.Now().String()
+	emailConfirmationToken := utils.GenSalt(200) + strconv.FormatInt(time.Now().Unix(), 10)
 	tokenGenerationTime := config.TIMELIMITREGISTERTOKEN
 
 	data.Password = business.hashed.Hash(data.Password + salt)
