@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"igbot.com/authentication/modules"
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/phuthuyxam11/gin-validate-i18n-support/utils"
 	"igbot.com/authentication/component"
@@ -9,9 +13,13 @@ import (
 	"igbot.com/authentication/db"
 	"igbot.com/authentication/middleware"
 	"igbot.com/authentication/modules/auth"
-	"log"
-	"net/http"
 )
+
+// @title Todo Application
+// @description This is a todo list management application
+// @version 1.0
+// @host localhost:8081
+// @BasePath /api/v1
 
 func main() {
 
@@ -51,7 +59,7 @@ func main() {
 	r.Use(middleware.I18nSupportMiddleWare(appCtx))
 
 	// authentication routes
-	auth.UserRoutesRegister(r, appCtx)
+	modules.UserRoutesRegister(r, appCtx)
 
 	errServer := http.ListenAndServe(":"+config.SERVERPOST, r)
 	if errServer != nil {

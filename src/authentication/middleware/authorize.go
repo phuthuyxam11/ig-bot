@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/phuthuyxam11/go-common-service/common"
 	"igbot.com/authentication/component"
 	"igbot.com/authentication/component/tokenprovider/jwt"
@@ -67,6 +68,17 @@ func RequiredAuth(appCtx component.AppContext) func(c *gin.Context) {
 
 		c.Set(utils.CurrentUser, user)
 
+		c.Next()
+	}
+}
+
+func BodyFormValidate[T any](bundle *i18n.Bundle) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var body T
+		if err := c.ShouldBind(&body); err != nil {
+			fmt.Println("errrrrrrorrrr", err)
+			//ValidationRender(c, err, body, bundle)
+		}
 		c.Next()
 	}
 }

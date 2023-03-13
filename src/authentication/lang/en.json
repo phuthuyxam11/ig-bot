@@ -12,6 +12,12 @@
         "userexist": "user is not exist"
       },
       "activated": "user has been activated"
+    },
+    "recoveryAcc": {
+      "email": {
+        "require": "{{.ErrorField}} is required",
+        "type": "validation failed on field 'Email', condition: email"
+      }
     }
   }
 }
