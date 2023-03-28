@@ -3,8 +3,9 @@ package userbiz
 import (
 	"context"
 	"errors"
-	"fmt"
 	"igbot.com/authentication/component"
+	"igbot.com/authentication/configs"
+	"igbot.com/authentication/kafka_pubsub"
 	usermod "igbot.com/authentication/modules/auth/model"
 	"igbot.com/authentication/utils"
 )
@@ -15,11 +16,17 @@ type recoveryPassWordStorage interface {
 
 type recoveryPassWordBusiness struct {
 	recoveryPassWordStorage recoveryPassWordStorage
+	msgBroker               kafka_pubsub.RegisterUserMessageBrokerRepository
+}
+type RecoveryPasswordMessage struct {
+	RecoveryUrl string
 }
 
-func NewRecoveryPassWord(storage recoveryPassWordStorage) *recoveryPassWordBusiness {
+func NewRecoveryPassWord(storage recoveryPassWordStorage,
+	msgBroker kafka_pubsub.RegisterUserMessageBrokerRepository) *recoveryPassWordBusiness {
 	return &recoveryPassWordBusiness{
 		recoveryPassWordStorage: storage,
+		msgBroker:               msgBroker,
 	}
 }
 
@@ -40,6 +47,13 @@ func (business *recoveryPassWordBusiness) SendRecoveryMail(ctx context.Context, 
 		}
 		return errors.New(errMessage)
 	}
-	fmt.Println("ASDASDD")
+	config := configs.LoadConfig()
+
+	if err := business.msgBroker.RecoveryPasswordEmailMessage(ctx, RecoveryPasswordMessage{RecoveryUrl: "#"}); err != nil {
+		return kafka_pubsub.NewErrorKafkaSendMessage(err,
+			config.KAFKA_TOPIC_SEND_MAIL,
+			"acc.recovery.sendmail")
+	}
+
 	return err
 }

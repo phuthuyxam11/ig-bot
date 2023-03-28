@@ -8,6 +8,7 @@ import (
 	userbiz "igbot.com/authentication/modules/auth/biz"
 	userstorage "igbot.com/authentication/modules/auth/storage"
 	"igbot.com/authentication/utils"
+	"strings"
 )
 
 func RegisterValidation(appCtx component.AppContext) error {
@@ -33,6 +34,46 @@ func RegisterValidation(appCtx component.AppContext) error {
 				return true
 			}
 			return false
+		})
+
+		// check exist on db
+		err = v.RegisterValidation("db_exist", func(fl validator.FieldLevel) bool {
+			// rule db_exist={table_name}.{table_column}
+			infoTable := strings.Split(fl.Param(), ".")
+			if len(infoTable) == 1 || len(infoTable) == 0 {
+				return false
+			}
+			recordValue := fl.Field().String()
+
+			store := userstorage.NewSqlStore(appCtx.GetMainDBConnection())
+			nativeBiz := userstorage.NewNativeStoreBiz(store)
+			record := userstorage.CheckRecordData{
+				TableName:  infoTable[0],
+				ColumnName: infoTable[1],
+				Value:      recordValue,
+			}
+
+			return nativeBiz.CheckRecordIsExist(ctx, record)
+		})
+
+		// check not exist on db
+		err = v.RegisterValidation("db_not_exist", func(fl validator.FieldLevel) bool {
+			// rule db_not_exist="{table_name}.{table_column}
+			infoTable := strings.Split(fl.Param(), ".")
+			if len(infoTable) == 1 || len(infoTable) == 0 {
+				return false
+			}
+			recordValue := fl.Field().String()
+
+			store := userstorage.NewSqlStore(appCtx.GetMainDBConnection())
+			nativeBiz := userstorage.NewNativeStoreBiz(store)
+			record := userstorage.CheckRecordData{
+				TableName:  infoTable[0],
+				ColumnName: infoTable[1],
+				Value:      recordValue,
+			}
+
+			return !nativeBiz.CheckRecordIsExist(ctx, record)
 		})
 
 		if err != nil {

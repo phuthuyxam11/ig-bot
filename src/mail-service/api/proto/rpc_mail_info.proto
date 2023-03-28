@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "igbot.com/sendmail/api/pb";
+
+message EmailInfo{
+  string subject = 1;
+  string from = 2;
+  map<int32, string> to = 3;
+  map<int32, string> cc = 4;
+  map<int32, string> bcc = 5;
+  bool html = 6;
+  string lang = 7;
+}

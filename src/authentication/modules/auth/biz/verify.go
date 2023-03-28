@@ -49,8 +49,7 @@ func (business *accountVerifyBusiness) Verify(ctx context.Context, appCtx compon
 		}
 		return errors.New(errMessage)
 	}
-
-	if time.Now().Second()-data.UpdatedAt.Second() > expiredTime {
+	if time.Now().Unix()-data.UpdatedAt.Unix() > int64(expiredTime) {
 		errMessage, err := utils.MessageRender(appCtx, "validate.verifyAcc.code.expired", map[string]string{})
 		if err != nil {
 			return errors.New("the account registration code has expired ")

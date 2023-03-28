@@ -14,6 +14,7 @@ services:
     depends_on:
       - zookeeper
     environment:
+      KAFKA_CREATE_TOPICS: "sendmail_topic:3:1"
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ADVERTISED_PORT: "9092"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -21,6 +22,7 @@ services:
       KAFKA_MESSAGE_MAX_BYTES: 104858800
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+#    command: sh -c "kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sendmail_topic --group my-first-application"
 
   kafka-rest:
     image: confluentinc/cp-kafka-rest:4.1.1
@@ -38,6 +40,9 @@ services:
     image: tchiotludo/akhq:0.17.0
     ports:
       - "8081:8080"
+    depends_on:
+      - zookeeper
+      - kafka-rest
     environment:
       AKHQ_CONFIGURATION: |
         akhq:
@@ -45,6 +50,13 @@ services:
             docker-kafka-server:
               properties:
                 bootstrap.servers: "kafka:9092"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   ig_bot_db:
     image: postgres
@@ -76,6 +88,7 @@ services:
       - kafka
     depends_on:
       - ig_bot_db_auth
+      - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       DB_DRIVER: postgres
@@ -85,7 +98,45 @@ services:
       DB_PORT: 5432
       DB_NAME: auth_service
       SERVER_POST: 80
-  
+      DOMAIN: http://localhost:3000
+      KAFKA_TOPIC_SEND_MAIL: sendmail_topic
+
+  # send mail service
+  ig_bot_db_sendmail:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=sendmail_service
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=sendmail_service
+    ports:
+      - "5434:5432"
+
+  sendmail-service:
+    container_name: sendmail-service
+    volumes:
+      - ./src/mail-service:/app/igbot-sendmail
+    build: src/mail-service
+    ports:
+      - "1997:1997"
+    links:
+      - kafka
+      - mailhog
+    depends_on:
+      - ig_bot_db_sendmail
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DB_DRIVER: postgres
+      DB_USER: sendmail_service
+      DB_PASSWORD: secret
+      DB_HOST: ig_bot_db_sendmail
+      DB_PORT: 5432
+      DB_NAME: sendmail_service
+      SERVER_POST: 80
+      SERVER_GRPC_PORT: 1997
+      KAFKA_TOPIC_SEND_MAIL: sendmail_topic
+
   # automate service
   automate-service:
     container_name: automate-service

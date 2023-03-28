@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+
+import "rpc_mail_verify_user.proto";
+import "rpc_mail_recovery_password.proto";
+
+option go_package = "igbot.com/sendmail/api/pb";
+
+service MailSenderService {
+  rpc SendMailVerifyAcc(MailVerifyAccRequest) returns (MailVerifyAccResponse){}
+  rpc SendMailRecoveryPassword(MailRecoveryAccRequest) returns (MailRecoveryAccResponse){}
+}

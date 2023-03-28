@@ -15,6 +15,6 @@ func UserRoutesRegister(router *gin.Engine, appCtx component.AppContext) {
 	routerAuth.POST("/login", ginauth.SignIn(appCtx))
 	routerAuth.GET("/profile", middleware.RequiredAuth(appCtx), ginauth.GetProfile(appCtx))
 	routerAuth.GET("/verify-acc", http_request.GetParameterValidate[request.VerifyAccBody](appCtx.I18nBundle()), ginauth.VerifyProfile(appCtx))
-	routerAuth.POST("/password-reset", middleware.BodyFormValidate[request.RecoveryPasswordVerifyBody](appCtx.I18nBundle()), ginauth.PassWordRecovery(appCtx))
+	routerAuth.POST("/password-reset", ginauth.PassWordRecovery(appCtx))
 	//routerAuth.POST("/password-reset", ginauth.PassWordRecovery(appCtx))
 }

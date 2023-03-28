@@ -12,11 +12,15 @@ func I18nSupportMiddleWare(ac component.AppContext) gin.HandlerFunc {
 		lang := c.Request.FormValue("lang")
 		accept := c.Request.Header["Accept-Language"]
 		localize := i18n.NewLocalizer(ac.I18nBundle(), language.English.String())
+		c.Set("lang_accept", language.English.String())
+
 		if len(accept) > 0 {
 			localize = i18n.NewLocalizer(ac.I18nBundle(), accept[0])
+			c.Set("lang_accept", accept[0])
 		}
 		if len(lang) > 0 {
 			localize = i18n.NewLocalizer(ac.I18nBundle(), lang)
+			c.Set("lang_accept", lang)
 		}
 		ac.SetI18nLocalizer(localize)
 		c.Next()
